@@ -276,6 +276,30 @@
             <input id="edit-stock" type="number" inputmode="numeric" min="0" required class="w-full rounded-xl border border-stone-300 px-3 py-3 text-base focus:border-[#0D253F] focus:outline-none" />
           </div>
         </div>
+        <div class="rounded-2xl bg-stone-50 border border-stone-200 p-3 space-y-2.5">
+          <div class="flex items-center gap-3">
+            <img id="edit-photo-preview" alt="Foto actual" class="w-14 h-14 rounded-xl object-cover bg-white border border-stone-200 shrink-0" />
+            <div class="flex-1 min-w-0 space-y-1.5">
+              <div class="text-xs font-bold text-stone-700">Foto de la prenda / color</div>
+              <div class="flex flex-wrap gap-1.5">
+                <label class="cursor-pointer px-2.5 py-1.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-100 text-xs font-bold text-stone-800 inline-flex items-center gap-1">
+                  <i data-lucide="camera" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span>Cámara</span>
+                  <input id="edit-photo-camera-input" type="file" accept="image/*" capture="environment" class="hidden" />
+                </label>
+                <label class="cursor-pointer px-2.5 py-1.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-100 text-xs font-bold text-stone-800 inline-flex items-center gap-1">
+                  <i data-lucide="image-plus" class="w-3.5 h-3.5 shrink-0"></i>
+                  <span>Galería</span>
+                  <input id="edit-photo-input" type="file" accept="image/*" class="hidden" />
+                </label>
+              </div>
+            </div>
+          </div>
+          <label id="edit-apply-color-wrap" class="flex items-center gap-2 text-xs font-semibold text-stone-700 cursor-pointer">
+            <input id="edit-apply-color-photo" type="checkbox" checked class="w-4 h-4 accent-[#0D253F] rounded" />
+            <span>Aplicar nueva foto a todas las tallas del mismo color</span>
+          </label>
+        </div>
         <div id="edit-calc-preview" class="rounded-2xl bg-[#EEF2F6] border border-[#BFC7D1] p-3.5 text-sm text-stone-800"></div>
         <div class="flex gap-3 pt-2">
           <button type="button" id="edit-cancel-btn" class="flex-1 py-3 px-4 rounded-xl border border-stone-300 font-semibold text-stone-700 hover:bg-stone-100 text-base">Cancelar</button>
@@ -620,16 +644,25 @@
           </div>
           </div>
 
-          <!-- Assorted sizes & colors builder -->
-          <div id="assorted-variant-fields" class="hidden space-y-2.5 rounded-2xl bg-stone-50 border border-stone-200 p-3 sm:p-4">
-            <div class="flex items-center justify-between gap-2">
-              <span class="text-sm font-bold text-stone-800">Desglose de tallas y colores</span>
+          <!-- Assorted sizes & colors builder (grouped by Color with per-color photo) -->
+          <div id="assorted-variant-fields" class="hidden space-y-3 rounded-2xl bg-stone-50 border border-stone-200 p-3 sm:p-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <span class="text-sm font-extrabold text-stone-900 block">Colores, fotos y tallas</span>
+                <span class="text-xs text-stone-500">Agrega 1 bloque por color con su foto y marca cuántas vienen de cada talla.</span>
+              </div>
               <span id="assorted-total-badge" class="num px-2.5 py-1 rounded-lg bg-[#102E4C] text-white text-xs font-extrabold shrink-0">Total: 12 uds</span>
             </div>
-            <div id="variant-rows" class="space-y-2"></div>
-            <button type="button" id="add-variant-row-btn" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#102E4C] text-[#0D253F] hover:bg-[#EEF2F6] font-bold text-sm flex items-center justify-center gap-1.5">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <span class="text-[11px] font-bold text-stone-500 mr-0.5">Tallas:</span>
+              <button type="button" data-size-preset="ropa" class="size-preset-btn px-2.5 py-1 rounded-lg border border-[#102E4C] bg-[#EEF2F6] text-[#0D253F] font-bold text-xs">Ropa (S–4XL)</button>
+              <button type="button" data-size-preset="pantalon" class="size-preset-btn px-2.5 py-1 rounded-lg border border-stone-200 bg-white text-stone-700 font-semibold text-xs">Pantalón (28–42)</button>
+              <button type="button" data-size-preset="zapatos" class="size-preset-btn px-2.5 py-1 rounded-lg border border-stone-200 bg-white text-stone-700 font-semibold text-xs">Zapatos (36–44)</button>
+            </div>
+            <div id="variant-rows" class="space-y-3"></div>
+            <button type="button" id="add-variant-row-btn" class="w-full py-3 px-3 rounded-xl border-2 border-dashed border-[#102E4C] text-[#0D253F] hover:bg-[#EEF2F6] font-extrabold text-sm flex items-center justify-center gap-1.5">
               <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
-              <span>Agregar otra talla o color</span>
+              <span>Agregar otro color</span>
             </button>
           </div>
 
@@ -927,6 +960,8 @@
         'boxes': '<path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 19v-5.5l-5-3-4.03 2.42Z"/><path d="m7 16.5-4.74-2.85"/><path d="m7 16.5 5-3"/><path d="M7 16.5v5.17"/><path d="M12 13.5V19l3.97 2.38a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.5l-5 3Z"/><path d="m17 16.5-5-3"/><path d="m17 16.5 4.74-2.85"/><path d="M17 16.5v5.17"/><path d="M7.97 4.42A2 2 0 0 0 7 6.13v4.37l5 3 5-3V6.13a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8Z"/><path d="M12 8 7.26 5.15"/><path d="m12 8 4.74-2.85"/><path d="M12 13.5V8"/>',
         'calculator': '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>',
         'camera': '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+        'chevron-down': '<path d="m6 9 6 6 6-6"/>',
+        'chevron-up': '<path d="m18 15-6-6-6 6"/>',
         'check-circle-2': '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
         'clock': '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
         'copy': '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
@@ -1145,6 +1180,14 @@
         }
       ];
 
+      const SIZE_PRESETS = {
+        ropa: ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', 'Única'],
+        pantalon: ['28', '30', '32', '34', '36', '38', '40', '42'],
+        zapatos: ['36', '37', '38', '39', '40', '41', '42', '43', '44']
+      };
+
+      const SIZE_ORDER = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', '28', '30', '32', '34', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', 'ÚNICA', 'SURTIDA (S-XL)'];
+
       let state = {
         storeName: 'Acuarios Shop',
         largeText: false,
@@ -1161,13 +1204,151 @@
         invQuery: '',
         invFilter: 'all',
         newPhotoDataUrl: '',
+        editPhotoDataUrl: '',
         assortedMode: false,
-        variantRows: [
-          { size: 'M', color: 'Negro', qty: 4 },
-          { size: 'L', color: 'Blanco', qty: 4 },
-          { size: 'XL', color: 'Azul', qty: 4 }
-        ]
+        sizePreset: 'ropa',
+        colorBlocks: [
+          { color: 'Negro', image: '', sizes: { S: 1, M: 2, L: 2, XL: 1 } },
+          { color: 'Blanco', image: '', sizes: { S: 1, M: 2, L: 2, XL: 1 } }
+        ],
+        sellGroupSelection: {},
+        invExpandedGroups: new Set()
       };
+
+      function getGroupKey(item) {
+        const code = (item && item.code ? String(item.code).trim().toLowerCase() : '');
+        if (code) return 'code:' + code;
+        const cat = (item && item.category ? String(item.category).trim().toLowerCase() : 'otros');
+        const name = (item && item.name ? String(item.name).trim().toLowerCase() : '');
+        return 'name:' + cat + '|' + name;
+      }
+
+      function getColorKey(color) {
+        const c = (color ? String(color).trim() : '');
+        return (c || 'sin color').toLowerCase();
+      }
+
+      function sizeSortRank(sz) {
+        const up = String(sz || '').trim().toUpperCase();
+        const idx = SIZE_ORDER.indexOf(up);
+        if (idx !== -1) return idx;
+        const num = parseFloat(up);
+        if (!Number.isNaN(num)) return 100 + num;
+        return 500;
+      }
+
+      function groupInventoryItems(items) {
+        const map = new Map();
+        items.forEach(item => {
+          const gKey = getGroupKey(item);
+          if (!map.has(gKey)) {
+            map.set(gKey, {
+              key: gKey,
+              name: item.name,
+              code: item.code || '',
+              category: item.category,
+              items: [],
+              totalStock: 0,
+              minPrice: item.sellPrice,
+              maxPrice: item.sellPrice,
+              minDozen: item.dozenPrice,
+              maxDozen: item.dozenPrice,
+              colorMap: new Map()
+            });
+          }
+          const g = map.get(gKey);
+          g.items.push(item);
+          g.totalStock += item.stock;
+          if (item.sellPrice < g.minPrice) g.minPrice = item.sellPrice;
+          if (item.sellPrice > g.maxPrice) g.maxPrice = item.sellPrice;
+          if (item.dozenPrice < g.minDozen) g.minDozen = item.dozenPrice;
+          if (item.dozenPrice > g.maxDozen) g.maxDozen = item.dozenPrice;
+
+          const cKey = getColorKey(item.color);
+          const cLabel = (item.color || '').trim() || 'Sin color';
+          if (!g.colorMap.has(cKey)) {
+            g.colorMap.set(cKey, {
+              colorKey: cKey,
+              colorLabel: cLabel,
+              rawImage: item.image || '',
+              totalStock: 0,
+              variants: []
+            });
+          }
+          const cg = g.colorMap.get(cKey);
+          cg.variants.push(item);
+          cg.totalStock += item.stock;
+          // Prefer custom uploaded photo over sample fallback for the color group
+          if ((!cg.rawImage || !cg.rawImage.startsWith('data:image/')) && item.image && item.image.startsWith('data:image/')) {
+            cg.rawImage = item.image;
+          }
+        });
+
+        return Array.from(map.values()).map(g => {
+          const colorGroups = Array.from(g.colorMap.values()).map(cg => {
+            cg.variants.sort((a, b) => sizeSortRank(a.size) - sizeSortRank(b.size) || String(a.size).localeCompare(String(b.size)));
+            cg.resolvedImage = resolveItemImage(cg.rawImage, g.category);
+            return cg;
+          });
+          colorGroups.sort((a, b) => (b.totalStock > 0 ? 1 : 0) - (a.totalStock > 0 ? 1 : 0) || a.colorLabel.localeCompare(b.colorLabel));
+          const allSizes = [...new Set(g.items.map(i => i.size))].sort((a, b) => sizeSortRank(a) - sizeSortRank(b));
+          return {
+            key: g.key,
+            name: g.name,
+            code: g.code,
+            category: g.category,
+            items: g.items,
+            totalStock: g.totalStock,
+            minPrice: g.minPrice,
+            maxPrice: g.maxPrice,
+            minDozen: g.minDozen,
+            maxDozen: g.maxDozen,
+            colorGroups,
+            allSizes,
+            coverImage: (colorGroups[0] && colorGroups[0].resolvedImage) || resolveItemImage('', g.category)
+          };
+        });
+      }
+
+      function readFileAsCompressedPhoto(file) {
+        return new Promise((resolve, reject) => {
+          if (!file) { reject(new Error('No file')); return; }
+          if (file.type && !file.type.startsWith('image/')) {
+            reject(new Error('Selecciona un archivo de imagen válido'));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = async ev => {
+            const optimized = await compressImageDataUrl(ev.target.result, 540, 0.78);
+            resolve(optimized);
+          };
+          reader.onerror = () => reject(new Error('No se pudo leer la foto seleccionada'));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function applyPhotoToColorGroup(groupKey, colorKey, photoDataUrl) {
+        if (!currentUser || !photoDataUrl) return;
+        const targets = state.inventory.filter(it => getGroupKey(it) === groupKey && getColorKey(it.color) === colorKey);
+        if (!targets.length) return;
+        try {
+          setSyncStatus('syncing');
+          const batch = writeBatch(db);
+          targets.forEach(it => {
+            const updated = { ...it, image: photoDataUrl };
+            batch.set(doc(db, 'inventory', it.id), buildInventoryDoc(updated, it.createdAt));
+          });
+          await batch.commit();
+          setSyncStatus(navigator.onLine ? 'online' : 'offline');
+          showToast(targets.length > 1
+            ? `Foto aplicada a las ${targets.length} tallas de este color`
+            : 'Foto actualizada');
+        } catch (err) {
+          console.error('Error actualizando foto por color:', err);
+          setSyncStatus(navigator.onLine ? 'online' : 'offline');
+          showToast('No se pudo actualizar la foto en Firebase', 'error');
+        }
+      }
 
       let currentUser = null;
       let currentUserRole = null;
@@ -1643,37 +1824,167 @@
           return;
         }
 
-        grid.innerHTML = items.map(item => {
-          const inCart = state.cart.find(c => c.id === item.id);
-          const remaining = item.stock - (inCart ? inCart.qty : 0);
+        const groups = groupInventoryItems(items);
+
+        grid.innerHTML = groups.map(group => {
+          // Single-variant item: keep fast 1-tap card
+          if (group.items.length === 1) {
+            const item = group.items[0];
+            const inCart = state.cart.find(c => c.id === item.id);
+            const remaining = item.stock - (inCart ? inCart.qty : 0);
+            const out = remaining <= 0;
+            const badgeClass = item.stock === 0 ? 'bg-rose-100 text-rose-800' : item.stock <= 3 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+            const badgeText = item.stock === 0 ? 'Agotada' : `Quedan ${item.stock}`;
+            const imgSrc = resolveItemImage(item.image, item.category);
+            return `
+              <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-stone-200 shadow-sm card-hover flex gap-3 sm:gap-3.5 items-center">
+                <img src="${imgSrc}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="${escHtml(item.name)}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover bg-stone-100 shrink-0 border border-stone-200" />
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2">
+                    <h3 class="font-extrabold text-stone-900 text-sm sm:text-base leading-snug truncate">${escHtml(item.name)}</h3>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-1 mt-1">
+                    ${item.code ? `<span class="px-1.5 py-0.5 rounded-lg bg-stone-800 text-white font-bold text-[11px] tracking-wide">#${escHtml(item.code)}</span>` : ''}
+                    <span class="px-1.5 py-0.5 rounded-lg bg-stone-100 text-stone-700 font-bold text-[11px]">Talla ${escHtml(item.size)}</span>
+                    ${item.color ? `<span class="px-1.5 py-0.5 rounded-lg bg-stone-100 text-stone-700 font-semibold text-[11px]">${escHtml(item.color)}</span>` : ''}
+                    <span class="px-1.5 py-0.5 rounded-lg font-bold text-[11px] ${badgeClass}">${badgeText}</span>
+                  </div>
+                  <div class="flex items-center justify-between mt-2.5 gap-2">
+                    <span class="num text-lg sm:text-xl font-extrabold text-stone-900">${fmt(item.sellPrice)}</span>
+                    <button type="button" data-add-id="${escHtml(item.id)}" ${out ? 'disabled' : ''} class="add-cart-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-white whitespace-nowrap shrink-0 ${out ? 'bg-stone-300 cursor-not-allowed' : 'bg-[#102E4C] hover:bg-[#0B2239] shadow-sm'}">
+                      ${out ? 'Sin stock' : '+ Agregar'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+
+          // Multi-variant grouped card with interactive Color & Size selector
+          const savedSel = state.sellGroupSelection[group.key] || {};
+          let activeColor = group.colorGroups.find(cg => cg.colorKey === savedSel.colorKey);
+          if (!activeColor) {
+            activeColor = group.colorGroups.find(cg => cg.variants.some(v => {
+              const c = state.cart.find(x => x.id === v.id);
+              return (v.stock - (c ? c.qty : 0)) > 0;
+            })) || group.colorGroups[0];
+          }
+
+          let activeItem = activeColor.variants.find(v => v.id === savedSel.itemId);
+          if (!activeItem) {
+            activeItem = activeColor.variants.find(v => {
+              const c = state.cart.find(x => x.id === v.id);
+              return (v.stock - (c ? c.qty : 0)) > 0;
+            }) || activeColor.variants[0];
+          }
+
+          state.sellGroupSelection[group.key] = { colorKey: activeColor.colorKey, itemId: activeItem.id };
+
+          const inCart = state.cart.find(c => c.id === activeItem.id);
+          const remaining = activeItem.stock - (inCart ? inCart.qty : 0);
           const out = remaining <= 0;
-          const badgeClass = item.stock === 0 ? 'bg-rose-100 text-rose-800' : item.stock <= 3 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
-          const badgeText = item.stock === 0 ? 'Agotada' : `Quedan ${item.stock}`;
-          const imgSrc = resolveItemImage(item.image, item.category);
+          const totalRemaining = group.items.reduce((sum, v) => {
+            const c = state.cart.find(x => x.id === v.id);
+            return sum + Math.max(0, v.stock - (c ? c.qty : 0));
+          }, 0);
+          const totalBadgeClass = group.totalStock === 0 ? 'bg-rose-100 text-rose-800' : group.totalStock <= 3 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+          const activeImg = resolveItemImage(activeItem.image || activeColor.rawImage, group.category);
+
           return `
-            <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-stone-200 shadow-sm card-hover flex gap-3 sm:gap-3.5 items-center">
-              <img src="${imgSrc}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="${escHtml(item.name)}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover bg-stone-100 shrink-0 border border-stone-200" />
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                  <h3 class="font-extrabold text-stone-900 text-sm sm:text-base leading-snug truncate">${escHtml(item.name)}</h3>
+            <div class="bg-white rounded-2xl p-3.5 sm:p-4 border border-stone-200 shadow-sm card-hover flex flex-col gap-3">
+              <div class="flex gap-3 items-center">
+                <img src="${activeImg}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="${escHtml(group.name)} ${escHtml(activeColor.colorLabel)}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover bg-stone-100 shrink-0 border border-stone-200" />
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-extrabold text-stone-900 text-sm sm:text-base leading-snug truncate">${escHtml(group.name)}</h3>
+                  <div class="flex flex-wrap items-center gap-1 mt-1">
+                    ${group.code ? `<span class="px-1.5 py-0.5 rounded-lg bg-stone-800 text-white font-bold text-[11px] tracking-wide">#${escHtml(group.code)}</span>` : ''}
+                    <span class="px-1.5 py-0.5 rounded-lg font-bold text-[11px] ${totalBadgeClass}">${group.totalStock === 0 ? 'Agotada' : `Total ${group.totalStock} disp.`}</span>
+                    <span class="px-1.5 py-0.5 rounded-lg bg-stone-100 text-stone-600 font-semibold text-[11px]">${group.colorGroups.length} ${group.colorGroups.length === 1 ? 'color' : 'colores'}</span>
+                  </div>
+                  <div class="mt-2 flex items-baseline gap-2">
+                    <span class="num text-lg sm:text-xl font-extrabold text-stone-900">${fmt(activeItem.sellPrice)}</span>
+                    <span class="text-[11px] font-semibold text-stone-500 truncate">${escHtml(activeColor.colorLabel)} · Talla ${escHtml(activeItem.size)}</span>
+                  </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-1 mt-1">
-                  ${item.code ? `<span class="px-1.5 py-0.5 rounded-lg bg-stone-800 text-white font-bold text-[11px] tracking-wide">#${escHtml(item.code)}</span>` : ''}
-                  <span class="px-1.5 py-0.5 rounded-lg bg-stone-100 text-stone-700 font-bold text-[11px]">Talla ${escHtml(item.size)}</span>
-                  ${item.color ? `<span class="px-1.5 py-0.5 rounded-lg bg-stone-100 text-stone-700 font-semibold text-[11px]">${escHtml(item.color)}</span>` : ''}
-                  <span class="px-1.5 py-0.5 rounded-lg font-bold text-[11px] ${badgeClass}">${badgeText}</span>
+              </div>
+
+              ${group.colorGroups.length > 1 || activeColor.colorKey !== 'sin color' ? `
+                <div>
+                  <div class="text-[11px] font-bold text-stone-500 mb-1">Color:</div>
+                  <div class="flex flex-wrap gap-1.5">
+                    ${group.colorGroups.map(cg => {
+                      const isSel = cg.colorKey === activeColor.colorKey;
+                      const cEmpty = cg.totalStock <= 0;
+                      return `
+                        <button type="button" data-sell-group="${escHtml(group.key)}" data-sell-color="${escHtml(cg.colorKey)}" class="sell-color-btn inline-flex items-center gap-1.5 pl-1 pr-2.5 py-1 rounded-xl border text-xs font-bold ${
+                          isSel
+                            ? 'bg-[#102E4C] text-white border-[#102E4C] shadow-sm'
+                            : cEmpty
+                              ? 'bg-stone-50 text-stone-400 border-stone-200 line-through'
+                              : 'bg-stone-50 text-stone-800 border-stone-200 hover:border-[#102E4C]'
+                        }">
+                          <img src="${cg.resolvedImage}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="" class="w-5 h-5 rounded-lg object-cover shrink-0 border border-black/10" />
+                          <span>${escHtml(cg.colorLabel)}</span>
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
                 </div>
-                <div class="flex items-center justify-between mt-2.5 gap-2">
-                  <span class="num text-lg sm:text-xl font-extrabold text-stone-900">${fmt(item.sellPrice)}</span>
-                  <button type="button" data-add-id="${escHtml(item.id)}" ${out ? 'disabled' : ''} class="add-cart-btn px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-white whitespace-nowrap shrink-0 ${out ? 'bg-stone-300 cursor-not-allowed' : 'bg-[#102E4C] hover:bg-[#0B2239] shadow-sm'}">
-                    ${out ? 'Sin stock' : '+ Agregar'}
-                  </button>
+              ` : ''}
+
+              <div>
+                <div class="text-[11px] font-bold text-stone-500 mb-1">Talla disponible (${escHtml(activeColor.colorLabel)}):</div>
+                <div class="flex flex-wrap gap-1.5">
+                  ${activeColor.variants.map(v => {
+                    const vc = state.cart.find(c => c.id === v.id);
+                    const vRem = v.stock - (vc ? vc.qty : 0);
+                    const isSel = v.id === activeItem.id;
+                    const vOut = vRem <= 0;
+                    return `
+                      <button type="button" data-sell-group="${escHtml(group.key)}" data-sell-color="${escHtml(activeColor.colorKey)}" data-sell-variant="${escHtml(v.id)}" class="sell-variant-btn px-2.5 py-1.5 rounded-xl border text-xs font-extrabold ${
+                        isSel
+                          ? 'bg-[#EEF2F6] text-[#0D253F] border-2 border-[#102E4C]'
+                          : vOut
+                            ? 'bg-stone-50 text-stone-400 border-stone-200 line-through'
+                            : 'bg-white text-stone-800 border-stone-200 hover:border-[#102E4C]'
+                      }">
+                        ${escHtml(v.size)} <span class="num font-semibold ${isSel ? 'text-[#3B5B78]' : 'text-stone-400'}">(${vRem})</span>
+                      </button>
+                    `;
+                  }).join('')}
                 </div>
+              </div>
+
+              <div class="flex items-center justify-between gap-2 pt-2 border-t border-stone-100">
+                <span class="text-xs font-bold ${out ? 'text-rose-600' : 'text-emerald-700'}">
+                  ${out ? 'Sin stock en esta talla' : `Quedan ${remaining} en ${escHtml(activeColor.colorLabel)} ${escHtml(activeItem.size)}`}
+                </span>
+                <button type="button" data-add-id="${escHtml(activeItem.id)}" ${out ? 'disabled' : ''} class="add-cart-btn px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-white whitespace-nowrap shrink-0 ${out ? 'bg-stone-300 cursor-not-allowed' : 'bg-[#102E4C] hover:bg-[#0B2239] shadow-sm'}">
+                  ${out ? (totalRemaining > 0 ? 'Elige otra talla' : 'Sin stock') : '+ Agregar'}
+                </button>
               </div>
             </div>
           `;
         }).join('');
 
+        grid.querySelectorAll('.sell-color-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.sellGroupSelection[btn.dataset.sellGroup] = {
+              colorKey: btn.dataset.sellColor,
+              itemId: null
+            };
+            renderSellGrid();
+          });
+        });
+        grid.querySelectorAll('.sell-variant-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.sellGroupSelection[btn.dataset.sellGroup] = {
+              colorKey: btn.dataset.sellColor,
+              itemId: btn.dataset.sellVariant
+            };
+            renderSellGrid();
+          });
+        });
         grid.querySelectorAll('.add-cart-btn').forEach(btn => {
           btn.addEventListener('click', () => addToCart(btn.dataset.addId));
         });
@@ -2014,28 +2325,99 @@
           return;
         }
 
-        list.innerHTML = filtered.map(item => {
-          const uCost = unitCost(item.dozenPrice);
-          const uProfit = item.sellPrice - uCost;
-          const badge = item.stock === 0 ? 'bg-rose-100 text-rose-800' : item.stock <= 3 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
-          const imgSrc = resolveItemImage(item.image, item.category);
+        const groups = groupInventoryItems(filtered);
+
+        list.innerHTML = groups.map(group => {
+          // Single-variant card
+          if (group.items.length === 1) {
+            const item = group.items[0];
+            const uCost = unitCost(item.dozenPrice);
+            const uProfit = item.sellPrice - uCost;
+            const badge = item.stock === 0 ? 'bg-rose-100 text-rose-800' : item.stock <= 3 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+            const imgSrc = resolveItemImage(item.image, item.category);
+            return `
+              <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200 shadow-sm flex flex-col gap-3">
+                <div class="flex gap-3 sm:gap-4 items-center">
+                  <img src="${imgSrc}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="${escHtml(item.name)}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover bg-stone-100 border border-stone-200 shrink-0" />
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-start justify-between gap-2">
+                      <h3 class="font-extrabold text-stone-900 text-base sm:text-lg leading-tight truncate">${escHtml(item.name)}</h3>
+                      <span class="px-2 py-1 rounded-xl text-xs font-extrabold ${badge} shrink-0">${item.stock === 0 ? 'Agotado' : item.stock + ' disp.'}</span>
+                    </div>
+                    <div class="text-xs sm:text-sm text-stone-500 font-medium mt-1 break-words">${item.code ? `<span class="px-1.5 py-0.5 rounded bg-stone-800 text-white font-bold text-xs mr-1">#${escHtml(item.code)}</span>` : ''}${escHtml(item.category)} · Talla <strong>${escHtml(item.size)}</strong>${item.color ? ` · ${escHtml(item.color)}` : ''}</div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-xs bg-stone-50 rounded-xl p-2.5 border border-stone-200">
+                  <div class="min-w-0">
+                    <span class="text-stone-500 block">Docena</span>
+                    <strong class="num text-stone-800 text-sm">${fmt(item.dozenPrice)}</strong>
+                  </div>
+                  <div class="min-w-0">
+                    <span class="text-stone-500 block">Sale c/u</span>
+                    <strong class="num text-stone-800 text-sm">${fmt(uCost)}</strong>
+                  </div>
+                  <div class="min-w-0">
+                    <span class="text-stone-500 block">Venta (Gana)</span>
+                    <strong class="num text-emerald-700 text-sm block">${fmt(item.sellPrice)} <span class="text-xs">(+${fmt(uProfit)})</span></strong>
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-100">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-stone-500 mr-1">Existencia:</span>
+                    <button type="button" data-stock-dec="${escHtml(item.id)}" class="w-10 h-10 rounded-xl border border-stone-200 font-extrabold text-stone-700 hover:bg-stone-100">-</button>
+                    <input type="number" inputmode="numeric" min="0" value="${item.stock}" data-stock-input="${escHtml(item.id)}" class="w-16 h-10 rounded-xl border border-stone-300 text-center font-extrabold text-base focus:border-[#0D253F] focus:outline-none" />
+                    <button type="button" data-stock-inc="${escHtml(item.id)}" class="w-10 h-10 rounded-xl border border-stone-200 font-extrabold text-stone-700 hover:bg-stone-100">+</button>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button type="button" data-edit-id="${escHtml(item.id)}" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-sm">Editar</button>
+                    <button type="button" data-del-id="${escHtml(item.id)}" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-sm">Borrar</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+
+          // Grouped multi-variant card with collapsible breakdown & photo per color
+          const isOpen = state.invExpandedGroups.has(group.key);
+          const uCost = unitCost(group.minDozen);
+          const uProfit = group.minPrice - uCost;
+          const badge = group.totalStock === 0 ? 'bg-rose-100 text-rose-800' : group.totalStock <= 3 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
+          const priceStr = group.minPrice === group.maxPrice ? fmt(group.minPrice) : `${fmt(group.minPrice)}–${fmt(group.maxPrice)}`;
+          const dozenStr = group.minDozen === group.maxDozen ? fmt(group.minDozen) : `${fmt(group.minDozen)}–${fmt(group.maxDozen)}`;
+
           return `
-            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-stone-200 shadow-sm flex flex-col gap-3">
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border ${isOpen ? 'border-[#102E4C] md:col-span-2' : 'border-stone-200'} shadow-sm flex flex-col gap-3">
               <div class="flex gap-3 sm:gap-4 items-center">
-                <img src="${imgSrc}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="${escHtml(item.name)}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover bg-stone-100 border border-stone-200 shrink-0" />
+                <img src="${group.coverImage}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="${escHtml(group.name)}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover bg-stone-100 border border-stone-200 shrink-0" />
                 <div class="flex-1 min-w-0">
                   <div class="flex items-start justify-between gap-2">
-                    <h3 class="font-extrabold text-stone-900 text-base sm:text-lg leading-tight truncate">${escHtml(item.name)}</h3>
-                    <span class="px-2 py-1 rounded-xl text-xs font-extrabold ${badge} shrink-0">${item.stock === 0 ? 'Agotado' : item.stock + ' disp.'}</span>
+                    <h3 class="font-extrabold text-stone-900 text-base sm:text-lg leading-tight truncate">${escHtml(group.name)}</h3>
+                    <span class="px-2 py-1 rounded-xl text-xs font-extrabold ${badge} shrink-0">${group.totalStock === 0 ? 'Agotado' : group.totalStock + ' disp.'}</span>
                   </div>
-                  <div class="text-xs sm:text-sm text-stone-500 font-medium mt-1 break-words">${item.code ? `<span class="px-1.5 py-0.5 rounded bg-stone-800 text-white font-bold text-xs mr-1">#${escHtml(item.code)}</span>` : ''}${escHtml(item.category)} · Talla <strong>${escHtml(item.size)}</strong>${item.color ? ` · ${escHtml(item.color)}` : ''}</div>
+                  <div class="text-xs sm:text-sm text-stone-500 font-medium mt-1 flex flex-wrap items-center gap-1">
+                    ${group.code ? `<span class="px-1.5 py-0.5 rounded bg-stone-800 text-white font-bold text-xs">#${escHtml(group.code)}</span>` : ''}
+                    <span>${escHtml(group.category)} · <strong>${group.colorGroups.length} ${group.colorGroups.length === 1 ? 'color' : 'colores'}</strong> · Tallas ${escHtml(group.allSizes.join(', '))}</span>
+                  </div>
                 </div>
+              </div>
+
+              <!-- Mini color chips preview -->
+              <div class="flex flex-wrap gap-1.5">
+                ${group.colorGroups.map(cg => `
+                  <span class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-xl bg-stone-50 border border-stone-200 text-xs font-bold text-stone-700">
+                    <img src="${cg.resolvedImage}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="" class="w-5 h-5 rounded-md object-cover shrink-0" />
+                    <span>${escHtml(cg.colorLabel)}</span>
+                    <span class="num text-[11px] font-extrabold ${cg.totalStock === 0 ? 'text-rose-600' : 'text-emerald-700'}">(${cg.totalStock})</span>
+                  </span>
+                `).join('')}
               </div>
 
               <div class="grid grid-cols-3 gap-2 text-xs bg-stone-50 rounded-xl p-2.5 border border-stone-200">
                 <div class="min-w-0">
                   <span class="text-stone-500 block">Docena</span>
-                  <strong class="num text-stone-800 text-sm">${fmt(item.dozenPrice)}</strong>
+                  <strong class="num text-stone-800 text-sm">${dozenStr}</strong>
                 </div>
                 <div class="min-w-0">
                   <span class="text-stone-500 block">Sale c/u</span>
@@ -2043,25 +2425,113 @@
                 </div>
                 <div class="min-w-0">
                   <span class="text-stone-500 block">Venta (Gana)</span>
-                  <strong class="num text-emerald-700 text-sm block">${fmt(item.sellPrice)} <span class="text-xs">(+${fmt(uProfit)})</span></strong>
+                  <strong class="num text-emerald-700 text-sm block">${priceStr} <span class="text-xs">(+${fmt(uProfit)})</span></strong>
                 </div>
               </div>
 
-              <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-100">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs font-bold text-stone-500 mr-1">Existencia:</span>
-                  <button type="button" data-stock-dec="${escHtml(item.id)}" class="w-10 h-10 rounded-xl border border-stone-200 font-extrabold text-stone-700 hover:bg-stone-100">-</button>
-                  <input type="number" inputmode="numeric" min="0" value="${item.stock}" data-stock-input="${escHtml(item.id)}" class="w-16 h-10 rounded-xl border border-stone-300 text-center font-extrabold text-base focus:border-[#0D253F] focus:outline-none" />
-                  <button type="button" data-stock-inc="${escHtml(item.id)}" class="w-10 h-10 rounded-xl border border-stone-200 font-extrabold text-stone-700 hover:bg-stone-100">+</button>
-                </div>
-                <div class="flex items-center gap-2">
-                  <button type="button" data-edit-id="${escHtml(item.id)}" class="px-3.5 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-sm">Editar</button>
-                  <button type="button" data-del-id="${escHtml(item.id)}" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-sm">Borrar</button>
-                </div>
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <button type="button" data-toggle-group="${escHtml(group.key)}" class="flex-1 py-2.5 px-3 rounded-xl border border-[#102E4C] ${isOpen ? 'bg-[#102E4C] text-white' : 'bg-[#EEF2F6] text-[#0D253F] hover:bg-[#DFE5EC]'} font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+                  <i data-lucide="${isOpen ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 shrink-0"></i>
+                  <span>${isOpen ? 'Ocultar colores y tallas' : `Ver colores y tallas (${group.items.length})`}</span>
+                </button>
+                <button type="button" data-add-to-model="${escHtml(group.key)}" class="py-2.5 px-3 rounded-xl border border-stone-300 bg-white hover:bg-stone-100 text-stone-800 font-bold text-xs sm:text-sm flex items-center gap-1 shrink-0">
+                  <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
+                  <span>Sumar tallas</span>
+                </button>
               </div>
+
+              ${isOpen ? `
+                <div class="pt-3 border-t border-stone-200 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  ${group.colorGroups.map(cg => `
+                    <div class="rounded-2xl bg-stone-50 border border-stone-200 p-3 space-y-2.5">
+                      <div class="flex items-center gap-2.5">
+                        <img src="${cg.resolvedImage}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="${escHtml(cg.colorLabel)}" class="w-14 h-14 rounded-xl object-cover bg-white border border-stone-200 shrink-0" />
+                        <div class="flex-1 min-w-0">
+                          <div class="flex items-center justify-between gap-2">
+                            <span class="font-extrabold text-stone-900 text-sm truncate">${escHtml(cg.colorLabel)}</span>
+                            <span class="num px-2 py-0.5 rounded-lg text-[11px] font-extrabold ${cg.totalStock === 0 ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'} shrink-0">${cg.totalStock} uds</span>
+                          </div>
+                          <div class="flex flex-wrap gap-1.5 mt-1.5">
+                            <label class="cursor-pointer px-2 py-1 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 text-[11px] font-bold text-[#0D253F] inline-flex items-center gap-1">
+                              <i data-lucide="camera" class="w-3.5 h-3.5 shrink-0"></i>
+                              <span>Foto color</span>
+                              <input type="file" accept="image/*" capture="environment" data-color-photo-group="${escHtml(group.key)}" data-color-photo-key="${escHtml(cg.colorKey)}" class="color-photo-input hidden" />
+                            </label>
+                            <label class="cursor-pointer px-2 py-1 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 text-[11px] font-bold text-stone-700 inline-flex items-center gap-1">
+                              <i data-lucide="image-plus" class="w-3.5 h-3.5 shrink-0"></i>
+                              <span>Galería</span>
+                              <input type="file" accept="image/*" data-color-photo-group="${escHtml(group.key)}" data-color-photo-key="${escHtml(cg.colorKey)}" class="color-photo-input hidden" />
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="space-y-1.5">
+                        ${cg.variants.map(v => `
+                          <div class="flex items-center justify-between gap-2 bg-white rounded-xl px-2.5 py-2 border border-stone-200">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                              <span class="px-2 py-0.5 rounded-lg bg-[#EEF2F6] text-[#0D253F] font-extrabold text-xs shrink-0">${escHtml(v.size)}</span>
+                              <span class="num text-xs font-bold text-stone-500">${fmt(v.sellPrice)}</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <button type="button" data-stock-dec="${escHtml(v.id)}" class="w-8 h-8 rounded-lg border border-stone-200 font-extrabold text-stone-700 hover:bg-stone-100">-</button>
+                              <input type="number" inputmode="numeric" min="0" value="${v.stock}" data-stock-input="${escHtml(v.id)}" class="w-12 h-8 rounded-lg border border-stone-300 text-center font-extrabold text-sm focus:border-[#0D253F] focus:outline-none" />
+                              <button type="button" data-stock-inc="${escHtml(v.id)}" class="w-8 h-8 rounded-lg border border-stone-200 font-extrabold text-stone-700 hover:bg-stone-100">+</button>
+                              <button type="button" data-edit-id="${escHtml(v.id)}" title="Editar variante" class="w-8 h-8 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 flex items-center justify-center">
+                                <i data-lucide="pencil" class="w-3.5 h-3.5 shrink-0"></i>
+                              </button>
+                              <button type="button" data-del-id="${escHtml(v.id)}" title="Borrar variante" class="w-8 h-8 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-sm flex items-center justify-center">×</button>
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
             </div>
           `;
         }).join('');
+
+        list.querySelectorAll('[data-toggle-group]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.dataset.toggleGroup;
+            if (state.invExpandedGroups.has(key)) state.invExpandedGroups.delete(key);
+            else state.invExpandedGroups.add(key);
+            renderInventory();
+            renderIcons();
+          });
+        });
+
+        list.querySelectorAll('[data-add-to-model]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const g = groups.find(x => x.key === btn.dataset.addToModel);
+            if (!g) return;
+            document.getElementById('new-name').value = g.name;
+            document.getElementById('new-code').value = g.code;
+            document.getElementById('new-category').value = g.category;
+            document.getElementById('new-dozen-price').value = g.minDozen;
+            document.getElementById('new-sell-price').value = g.minPrice.toFixed(2);
+            applyCategorySizePreset(g.category);
+            setAssortedMode(true);
+            switchTab('add');
+            showToast(`Listo para sumar tallas o colores a "${g.name}"`, 'info');
+          });
+        });
+
+        list.querySelectorAll('.color-photo-input').forEach(inp => {
+          inp.addEventListener('change', async e => {
+            const file = e.target.files[0];
+            e.target.value = '';
+            if (!file) return;
+            try {
+              const optimized = await readFileAsCompressedPhoto(file);
+              await applyPhotoToColorGroup(inp.dataset.colorPhotoGroup, inp.dataset.colorPhotoKey, optimized);
+            } catch (err) {
+              showToast(err.message || 'No se pudo cargar la foto', 'error');
+            }
+          });
+        });
 
         list.querySelectorAll('[data-stock-dec]').forEach(b => {
           b.addEventListener('click', () => {
@@ -2100,13 +2570,14 @@
           b.addEventListener('click', () => {
             const it = state.inventory.find(x => x.id === b.dataset.delId);
             if (!it) return;
-            openConfirm('¿Borrar prenda?', `Se eliminará "${it.name}" (Talla ${it.size}) de tu inventario.`, async () => {
+            openConfirm('¿Borrar prenda?', `Se eliminará "${it.name}" (${it.color || 'Sin color'} · Talla ${it.size}) de tu inventario.`, async () => {
               state.cart = state.cart.filter(c => c.id !== it.id);
               await deleteInventoryItemFromCloud(it.id);
               showToast('Prenda eliminada', 'info');
             });
           });
         });
+        renderIcons();
       }
 
       document.getElementById('inv-search').addEventListener('input', e => {
@@ -2144,6 +2615,7 @@
       function openEditModal(id) {
         const it = state.inventory.find(x => x.id === id);
         if (!it) return;
+        state.editPhotoDataUrl = '';
         document.getElementById('edit-id').value = it.id;
         document.getElementById('edit-code').value = it.code || '';
         document.getElementById('edit-name').value = it.name;
@@ -2153,16 +2625,39 @@
         document.getElementById('edit-dozen').value = it.dozenPrice;
         document.getElementById('edit-price').value = it.sellPrice;
         document.getElementById('edit-stock').value = it.stock;
+        document.getElementById('edit-photo-preview').src = resolveItemImage(it.image, it.category);
+        document.getElementById('edit-apply-color-photo').checked = true;
         updateEditCalcPreview();
         const m = document.getElementById('edit-modal');
         m.classList.remove('hidden');
         m.classList.add('flex');
+        renderIcons();
       }
       function closeEditModal() {
+        state.editPhotoDataUrl = '';
         const m = document.getElementById('edit-modal');
         m.classList.add('hidden');
         m.classList.remove('flex');
       }
+      async function handleEditPhotoFile(file) {
+        if (!file) return;
+        try {
+          const optimized = await readFileAsCompressedPhoto(file);
+          state.editPhotoDataUrl = optimized;
+          document.getElementById('edit-photo-preview').src = optimized;
+          showToast('Nueva foto lista — guarda cambios para aplicar', 'info');
+        } catch (err) {
+          showToast(err.message || 'No se pudo cargar la foto', 'error');
+        }
+      }
+      document.getElementById('edit-photo-input').addEventListener('change', e => {
+        handleEditPhotoFile(e.target.files[0]);
+        e.target.value = '';
+      });
+      document.getElementById('edit-photo-camera-input').addEventListener('change', e => {
+        handleEditPhotoFile(e.target.files[0]);
+        e.target.value = '';
+      });
       document.getElementById('edit-close').addEventListener('click', closeEditModal);
       document.getElementById('edit-cancel-btn').addEventListener('click', closeEditModal);
       document.getElementById('edit-modal').addEventListener('click', e => {
@@ -2190,58 +2685,189 @@
         it.dozenPrice = Math.max(0, Number(document.getElementById('edit-dozen').value) || 0);
         it.sellPrice = Math.max(0, Number(document.getElementById('edit-price').value) || 0);
         it.stock = Math.max(0, parseInt(document.getElementById('edit-stock').value, 10) || 0);
+        const newPhoto = state.editPhotoDataUrl;
+        const applyToColor = document.getElementById('edit-apply-color-photo').checked;
+        if (newPhoto) it.image = newPhoto;
         closeEditModal();
         renderAll();
+        if (newPhoto && applyToColor && currentUser) {
+          const gKey = getGroupKey(it);
+          const cKey = getColorKey(it.color);
+          const siblings = state.inventory.filter(x => x.id !== it.id && getGroupKey(x) === gKey && getColorKey(x.color) === cKey);
+          try {
+            setSyncStatus('syncing');
+            const batch = writeBatch(db);
+            batch.set(doc(db, 'inventory', it.id), buildInventoryDoc(it, it.createdAt));
+            siblings.forEach(s => {
+              batch.set(doc(db, 'inventory', s.id), buildInventoryDoc({ ...s, image: newPhoto }, s.createdAt));
+            });
+            await batch.commit();
+            setSyncStatus(navigator.onLine ? 'online' : 'offline');
+            showToast(siblings.length ? `Prenda actualizada y foto aplicada a ${siblings.length + 1} tallas` : 'Prenda actualizada');
+            return;
+          } catch (err) {
+            console.error('Error guardando foto grupal:', err);
+          }
+        }
         await saveInventoryItemToCloud(it);
         showToast('Prenda actualizada');
       });
 
       // ==================== TAB 3: ROPA NUEVA & CALCULADORA ====================
+      function getAssortedTotalQty() {
+        const presetSizes = SIZE_PRESETS[state.sizePreset] || SIZE_PRESETS.ropa;
+        return state.colorBlocks.reduce((sum, blk) => {
+          return sum + presetSizes.reduce((s2, sz) => s2 + (parseInt(blk.sizes[sz], 10) || 0), 0);
+        }, 0);
+      }
+
       function getEffectiveNewQty() {
         if (state.assortedMode) {
-          const sum = state.variantRows.reduce((a, r) => a + (parseInt(r.qty, 10) || 0), 0);
-          return Math.max(1, sum);
+          return Math.max(1, getAssortedTotalQty());
         }
         const rawQty = parseInt(document.getElementById('new-qty').value, 10);
         return Number.isNaN(rawQty) || rawQty <= 0 ? 1 : rawQty;
       }
 
+      function applyCategorySizePreset(cat) {
+        if (cat === 'Zapatos') setSizePreset('zapatos');
+        else if (cat === 'Pantalones' || cat === 'Pantalones Cargo') setSizePreset('pantalon');
+        else setSizePreset('ropa');
+      }
+
+      function setSizePreset(preset) {
+        if (!SIZE_PRESETS[preset]) return;
+        state.sizePreset = preset;
+        document.querySelectorAll('.size-preset-btn').forEach(b => {
+          const act = b.dataset.sizePreset === preset;
+          b.className = 'size-preset-btn px-2.5 py-1 rounded-lg border text-xs ' + (act ? 'border-[#102E4C] bg-[#EEF2F6] text-[#0D253F] font-bold' : 'border-stone-200 bg-white text-stone-700 font-semibold');
+        });
+        if (state.assortedMode) {
+          renderVariantRows();
+          recalcNewGarment(true);
+        }
+      }
+
       function renderVariantRows() {
         const wrap = document.getElementById('variant-rows');
-        const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', 'Única'];
-        wrap.innerHTML = state.variantRows.map((row, idx) => `
-          <div class="grid grid-cols-[64px_1fr_56px_36px] gap-1.5 sm:gap-2 items-center">
-            <select data-v-idx="${idx}" data-v-field="size" class="rounded-xl border border-stone-300 bg-white px-2 py-2.5 text-sm font-bold">
-              ${sizes.map(sz => `<option value="${sz}" ${row.size === sz ? 'selected' : ''}>${sz}</option>`).join('')}
-            </select>
-            <input type="text" data-v-idx="${idx}" data-v-field="color" value="${escHtml(row.color)}" placeholder="Color" class="min-w-0 rounded-xl border border-stone-300 bg-white px-2.5 py-2.5 text-sm" />
-            <input type="number" inputmode="numeric" min="1" data-v-idx="${idx}" data-v-field="qty" value="${row.qty}" class="rounded-xl border border-stone-300 bg-white px-1.5 py-2.5 text-sm font-extrabold text-center" />
-            <button type="button" data-v-del="${idx}" aria-label="Quitar fila" class="w-9 h-9 rounded-xl border border-rose-200 bg-rose-50/70 text-rose-600 hover:bg-rose-100 font-extrabold text-lg flex items-center justify-center">×</button>
-          </div>
-        `).join('');
+        const presetSizes = SIZE_PRESETS[state.sizePreset] || SIZE_PRESETS.ropa;
+        const cat = document.getElementById('new-category').value;
 
-        const total = state.variantRows.reduce((a, r) => a + (parseInt(r.qty, 10) || 0), 0);
+        wrap.innerHTML = state.colorBlocks.map((blk, idx) => {
+          const blkTotal = presetSizes.reduce((a, sz) => a + (parseInt(blk.sizes[sz], 10) || 0), 0);
+          const previewSrc = blk.image || resolveItemImage('', cat);
+          return `
+            <div class="rounded-2xl bg-white border border-stone-200 p-3 space-y-2.5 shadow-sm">
+              <div class="flex items-start gap-2.5">
+                <div class="relative shrink-0">
+                  <img src="${previewSrc}" onerror="this.onerror=null;this.src=window.__acuariosPlaceholder" alt="${escHtml(blk.color || 'Color')}" class="w-14 h-14 rounded-xl object-cover bg-stone-100 border ${blk.image ? 'border-[#102E4C]' : 'border-stone-200'}" />
+                  ${blk.image ? `<button type="button" data-blk-clear-img="${idx}" title="Quitar foto" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-600 text-white text-xs font-extrabold flex items-center justify-center shadow">×</button>` : ''}
+                </div>
+                <div class="flex-1 min-w-0 space-y-1.5">
+                  <div class="flex items-center gap-1.5">
+                    <input type="text" data-blk-color="${idx}" value="${escHtml(blk.color)}" placeholder="Nombre del color (ej. Verde)" class="flex-1 min-w-0 rounded-xl border border-stone-300 bg-stone-50 px-3 py-2 text-sm font-bold focus:border-[#0D253F] focus:bg-white focus:outline-none" />
+                    <span class="num px-2 py-1 rounded-lg bg-[#EEF2F6] text-[#0D253F] text-xs font-extrabold shrink-0">${blkTotal} uds</span>
+                    ${state.colorBlocks.length > 1 ? `<button type="button" data-blk-del="${idx}" aria-label="Quitar color" class="w-9 h-9 rounded-xl border border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 font-extrabold text-base flex items-center justify-center shrink-0">×</button>` : ''}
+                  </div>
+                  <div class="flex flex-wrap gap-1.5">
+                    <label class="cursor-pointer px-2.5 py-1 rounded-lg border border-stone-300 bg-stone-50 hover:bg-stone-100 text-[11px] font-bold text-[#0D253F] inline-flex items-center gap-1">
+                      <i data-lucide="camera" class="w-3.5 h-3.5 shrink-0"></i>
+                      <span>Cámara</span>
+                      <input type="file" accept="image/*" capture="environment" data-blk-img="${idx}" class="blk-photo-input hidden" />
+                    </label>
+                    <label class="cursor-pointer px-2.5 py-1 rounded-lg border border-stone-300 bg-stone-50 hover:bg-stone-100 text-[11px] font-bold text-stone-700 inline-flex items-center gap-1">
+                      <i data-lucide="image-plus" class="w-3.5 h-3.5 shrink-0"></i>
+                      <span>Galería</span>
+                      <input type="file" accept="image/*" data-blk-img="${idx}" class="blk-photo-input hidden" />
+                    </label>
+                    ${blk.image ? '<span class="text-[11px] font-bold text-emerald-700 self-center">✓ Foto propia</span>' : '<span class="text-[11px] text-stone-400 self-center">Foto de este color</span>'}
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
+                ${presetSizes.map(sz => {
+                  const q = parseInt(blk.sizes[sz], 10) || 0;
+                  return `
+                    <div class="flex items-center justify-between gap-1 rounded-xl border ${q > 0 ? 'border-[#102E4C] bg-[#EEF2F6]/60' : 'border-stone-200 bg-stone-50'} px-2 py-1.5">
+                      <span class="text-xs font-extrabold ${q > 0 ? 'text-[#0D253F]' : 'text-stone-500'}">${escHtml(sz)}</span>
+                      <div class="flex items-center gap-1">
+                        <button type="button" data-blk-step="${idx}" data-blk-size="${escHtml(sz)}" data-blk-delta="-1" class="w-6 h-6 rounded-lg bg-white border border-stone-300 font-extrabold text-xs text-stone-700 flex items-center justify-center">-</button>
+                        <input type="number" inputmode="numeric" min="0" data-blk-qty="${idx}" data-blk-size="${escHtml(sz)}" value="${q}" class="num w-9 h-6 rounded-lg border border-stone-300 bg-white text-center text-xs font-extrabold focus:border-[#0D253F] focus:outline-none" />
+                        <button type="button" data-blk-step="${idx}" data-blk-size="${escHtml(sz)}" data-blk-delta="1" class="w-6 h-6 rounded-lg bg-white border border-stone-300 font-extrabold text-xs text-stone-700 flex items-center justify-center">+</button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const total = getAssortedTotalQty();
         document.getElementById('assorted-total-badge').textContent = `Total: ${total} uds`;
 
-        wrap.querySelectorAll('[data-v-idx]').forEach(el => {
-          el.addEventListener('input', () => {
-            const i = Number(el.dataset.vIdx);
-            const f = el.dataset.vField;
-            state.variantRows[i][f] = f === 'qty' ? Math.max(0, parseInt(el.value, 10) || 0) : el.value;
-            const sum = state.variantRows.reduce((a, r) => a + (parseInt(r.qty, 10) || 0), 0);
-            document.getElementById('assorted-total-badge').textContent = `Total: ${sum} uds`;
+        wrap.querySelectorAll('[data-blk-color]').forEach(inp => {
+          inp.addEventListener('input', () => {
+            state.colorBlocks[Number(inp.dataset.blkColor)].color = inp.value;
+          });
+        });
+
+        wrap.querySelectorAll('[data-blk-qty]').forEach(inp => {
+          inp.addEventListener('input', () => {
+            const idx = Number(inp.dataset.blkQty);
+            const sz = inp.dataset.blkSize;
+            state.colorBlocks[idx].sizes[sz] = Math.max(0, parseInt(inp.value, 10) || 0);
+            document.getElementById('assorted-total-badge').textContent = `Total: ${getAssortedTotalQty()} uds`;
             recalcNewGarment(true);
           });
         });
 
-        wrap.querySelectorAll('[data-v-del]').forEach(btn => {
+        wrap.querySelectorAll('[data-blk-step]').forEach(btn => {
           btn.addEventListener('click', () => {
-            if (state.variantRows.length <= 1) return;
-            state.variantRows.splice(Number(btn.dataset.vDel), 1);
+            const idx = Number(btn.dataset.blkStep);
+            const sz = btn.dataset.blkSize;
+            const delta = Number(btn.dataset.blkDelta);
+            const cur = parseInt(state.colorBlocks[idx].sizes[sz], 10) || 0;
+            state.colorBlocks[idx].sizes[sz] = Math.max(0, cur + delta);
             renderVariantRows();
             recalcNewGarment(true);
           });
         });
+
+        wrap.querySelectorAll('.blk-photo-input').forEach(inp => {
+          inp.addEventListener('change', async e => {
+            const file = e.target.files[0];
+            e.target.value = '';
+            if (!file) return;
+            try {
+              const optimized = await readFileAsCompressedPhoto(file);
+              state.colorBlocks[Number(inp.dataset.blkImg)].image = optimized;
+              renderVariantRows();
+              showToast('Foto asignada a este color');
+            } catch (err) {
+              showToast(err.message || 'No se pudo cargar la foto', 'error');
+            }
+          });
+        });
+
+        wrap.querySelectorAll('[data-blk-clear-img]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            state.colorBlocks[Number(btn.dataset.blkClearImg)].image = '';
+            renderVariantRows();
+          });
+        });
+
+        wrap.querySelectorAll('[data-blk-del]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (state.colorBlocks.length <= 1) return;
+            state.colorBlocks.splice(Number(btn.dataset.blkDel), 1);
+            renderVariantRows();
+            recalcNewGarment(true);
+          });
+        });
+
+        renderIcons();
       }
 
       function setAssortedMode(isAssorted) {
@@ -2256,10 +2882,16 @@
         recalcNewGarment(true);
       }
 
+      document.getElementById('new-category').addEventListener('change', e => {
+        applyCategorySizePreset(e.target.value);
+      });
+      document.querySelectorAll('.size-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => setSizePreset(btn.dataset.sizePreset));
+      });
       document.getElementById('mode-single-btn').addEventListener('click', () => setAssortedMode(false));
       document.getElementById('mode-assorted-btn').addEventListener('click', () => setAssortedMode(true));
       document.getElementById('add-variant-row-btn').addEventListener('click', () => {
-        state.variantRows.push({ size: 'M', color: '', qty: 2 });
+        state.colorBlocks.push({ color: '', image: '', sizes: {} });
         renderVariantRows();
         recalcNewGarment(true);
       });
@@ -2372,26 +3004,34 @@
         const itemsToCreate = [];
 
         if (state.assortedMode) {
-          const validRows = state.variantRows.filter(r => (parseInt(r.qty, 10) || 0) > 0);
-          if (!validRows.length) {
-            showToast('Agrega al menos una talla con cantidad mayor a 0', 'error');
+          const presetSizes = SIZE_PRESETS[state.sizePreset] || SIZE_PRESETS.ropa;
+          const stamp = Date.now();
+          let seq = 0;
+          state.colorBlocks.forEach(blk => {
+            const colorName = (blk.color || '').trim();
+            const colorImg = blk.image || state.newPhotoDataUrl || fallbackImgKey;
+            presetSizes.forEach(sz => {
+              const q = parseInt(blk.sizes[sz], 10) || 0;
+              if (q > 0) {
+                itemsToCreate.push(buildInventoryDoc({
+                  id: 'p_' + stamp + '_' + (seq++) + '_' + Math.random().toString(36).slice(2, 5),
+                  code: baseCode,
+                  name: baseName,
+                  category: cat,
+                  size: sz,
+                  color: colorName,
+                  stock: q,
+                  dozenPrice: equivDozen,
+                  sellPrice,
+                  image: colorImg
+                }));
+              }
+            });
+          });
+          if (!itemsToCreate.length) {
+            showToast('Marca al menos una talla con cantidad mayor a 0', 'error');
             return;
           }
-          const stamp = Date.now();
-          validRows.forEach((r, idx) => {
-            itemsToCreate.push(buildInventoryDoc({
-              id: 'p_' + stamp + '_' + idx + '_' + Math.random().toString(36).slice(2, 5),
-              code: baseCode,
-              name: baseName,
-              category: cat,
-              size: r.size,
-              color: (r.color || '').trim(),
-              stock: parseInt(r.qty, 10) || 0,
-              dozenPrice: equivDozen,
-              sellPrice,
-              image: state.newPhotoDataUrl || fallbackImgKey
-            }));
-          });
         } else {
           const rawNewQty = parseInt(document.getElementById('new-qty').value, 10);
           itemsToCreate.push(buildInventoryDoc({
@@ -2411,18 +3051,48 @@
         try {
           setSyncStatus('syncing');
           const batch = writeBatch(db);
+          let mergedCount = 0;
+          let createdCount = 0;
           itemsToCreate.forEach(docData => {
-            batch.set(doc(db, 'inventory', docData.id), docData);
+            const gKey = getGroupKey(docData);
+            const cKey = getColorKey(docData.color);
+            const sKey = String(docData.size || '').trim().toLowerCase();
+            const existing = state.inventory.find(it =>
+              getGroupKey(it) === gKey &&
+              getColorKey(it.color) === cKey &&
+              String(it.size || '').trim().toLowerCase() === sKey
+            );
+            if (existing) {
+              const hasCustomImg = docData.image && docData.image.startsWith('data:image/');
+              const merged = {
+                ...existing,
+                stock: existing.stock + docData.stock,
+                dozenPrice: docData.dozenPrice,
+                sellPrice: docData.sellPrice,
+                image: hasCustomImg ? docData.image : existing.image
+              };
+              batch.set(doc(db, 'inventory', existing.id), buildInventoryDoc(merged, existing.createdAt));
+              mergedCount += 1;
+            } else {
+              batch.set(doc(db, 'inventory', docData.id), docData);
+              createdCount += 1;
+            }
           });
           await batch.commit();
           setSyncStatus(navigator.onLine ? 'online' : 'offline');
-          showToast(itemsToCreate.length > 1
-            ? `¡${itemsToCreate.length} variantes guardadas en Firebase!`
-            : '¡Prenda guardada en Firebase!');
+          if (mergedCount && !createdCount) {
+            showToast(`¡Stock sumado en ${mergedCount} ${mergedCount === 1 ? 'variante existente' : 'variantes existentes'}!`);
+          } else {
+            showToast(itemsToCreate.length > 1
+              ? `¡${itemsToCreate.length} variantes guardadas en Firebase!`
+              : '¡Prenda guardada en Firebase!');
+          }
           document.getElementById('new-name').value = '';
           document.getElementById('new-code').value = '';
           document.getElementById('new-color').value = '';
           setNewPhotoPreview('');
+          state.colorBlocks = [{ color: '', image: '', sizes: {} }];
+          if (state.assortedMode) renderVariantRows();
           switchTab('inventory');
         } catch (err) {
           console.error('Error guardando prenda:', err);
