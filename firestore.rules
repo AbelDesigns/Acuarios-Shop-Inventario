@@ -1,0 +1,366 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model - Acuarios Shop (Inventory & POS)
+// ===============================================================
+//
+// Collection: authorizedUsers
+// Document ID: {email} (lowercase email string, e.g., "staff@gmail.com")
+// Fields:
+//   - email: string (required, immutable, == docId, lowercase, 3..120 chars, valid email)
+//   - role: string (required, enum: 'admin' | 'staff')
+//   - active: bool (required)
+//   - displayName: string (required, 0..100 chars)
+//   - addedBy: string (required, 0..128 chars)
+//   - createdAt: string (required, immutable, 1..40 chars)
+//   - updatedAt: string (required, 1..40 chars)
+//
+// Collection: settings
+// Document ID: "store" (singleton; all other setting IDs denied)
+// Fields:
+//   - storeName: string (required, 1..80 chars)
+//   - exchangeRate: number (required, > 0 && <= 10000000)
+//   - activeRateKey: string (required, enum: 'bcv' | 'euro' | 'binance' | 'avg')
+//   - rates: map (required, exact keys: 'bcv', 'euro', 'binance', 'avg', each number > 0 && <= 10000000)
+//   - updatedAt: string (required, 1..40 chars)
+//   - updatedBy: string (required, == request.auth.uid)
+//
+// Collection: inventory
+// Document ID: {itemId} (1..64 chars)
+// Fields:
+//   - id: string (required, immutable, == itemId, 1..64 chars)
+//   - code: string (required, 0..40 chars)
+//   - name: string (required, 1..120 chars)
+//   - category: string (required, enum: 'Franelas' | 'Polos' | 'Pantalones' | 'Chaquetas' | 'Otros')
+//   - size: string (required, 1..40 chars)
+//   - color: string (required, 0..60 chars)
+//   - stock: int (required, 0..1000000)
+//   - dozenPrice: number (required, 0..1000000)
+//   - sellPrice: number (required, 0..1000000)
+//   - image: string (required, 0..450000 chars)
+//   - createdAt: string (required, immutable, 1..40 chars)
+//   - updatedAt: string (required, 1..40 chars)
+//   - updatedBy: string (required, == request.auth.uid)
+//
+// Collection: sales
+// Document ID: {saleId} (1..64 chars; documents are immutable on update)
+// Fields:
+//   - id: string (required, == saleId, 1..64 chars)
+//   - date: string (required, 1..40 chars)
+//   - currency: string (required, enum: 'USD' | 'VES')
+//   - rate: number (required, > 0 && <= 10000000)
+//   - billedAmount: number (required, 0..1000000000)
+//   - payment: string (required, enum: 'Efectivo' | 'Pago Móvil' | 'Zelle' | 'Punto')
+//   - total: number (required, 0..10000000)
+//   - profit: number (required, -10000000..10000000)
+//   - items: list (required, 1..100 line item maps)
+//   - createdBy: string (required, == request.auth.uid)
+//   - createdByEmail: string (required, == userEmail())
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Authentication & Role-Based Access Control (RBAC) Helpers
+    // ===============================================================
+
+    // Require an authenticated user with a verified email token claim
+    function isSignedInVerified() {
+      return request.auth != null &&
+             'email' in request.auth.token &&
+             request.auth.token.email != null &&
+             request.auth.token.email is string &&
+             request.auth.token.email.size() > 0 &&
+             'email_verified' in request.auth.token &&
+             request.auth.token.email_verified == true;
+    }
+
+    // Normalized lowercase email from trusted Firebase Auth token
+    function userEmail() {
+      return request.auth.token.email.lower();
+    }
+
+    // Hardcoded bootstrap owner admin (cannot be locked out or deleted)
+    function isBootstrapAdmin() {
+      return isSignedInVerified() && userEmail() == 'abel25.aaa@gmail.com';
+    }
+
+    // Active administrator in the staff allowlist or bootstrap admin
+    function isAdmin() {
+      return isBootstrapAdmin() ||
+             (isSignedInVerified() &&
+              exists(/databases/$(database)/documents/authorizedUsers/$(userEmail())) &&
+              get(/databases/$(database)/documents/authorizedUsers/$(userEmail())).data.active == true &&
+              get(/databases/$(database)/documents/authorizedUsers/$(userEmail())).data.role == 'admin');
+    }
+
+    // Active staff member ('admin' or 'staff') in allowlist or bootstrap admin
+    function isAuthorizedStaff() {
+      return isBootstrapAdmin() ||
+             (isSignedInVerified() &&
+              exists(/databases/$(database)/documents/authorizedUsers/$(userEmail())) &&
+              get(/databases/$(database)/documents/authorizedUsers/$(userEmail())).data.active == true &&
+              get(/databases/$(database)/documents/authorizedUsers/$(userEmail())).data.role in ['admin', 'staff']);
+    }
+
+    // ===============================================================
+    // General Validation Helpers
+    // ===============================================================
+
+    function isNumber(val) {
+      return val is int || val is float;
+    }
+
+    function isValidPositiveRate(val) {
+      return isNumber(val) && val > 0 && val <= 10000000;
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+             email.matches('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$');
+    }
+
+    function hasExactFields(data, fields) {
+      return data.keys().hasOnly(fields) && data.keys().hasAll(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators (Called on BOTH create and update)
+    // ===============================================================
+
+    function isValidAuthorizedUser(data, emailDocId) {
+      let allowedFields = [
+        'email',
+        'role',
+        'active',
+        'displayName',
+        'addedBy',
+        'createdAt',
+        'updatedAt'
+      ];
+      return hasExactFields(data, allowedFields) &&
+             emailDocId is string &&
+             emailDocId == emailDocId.lower() &&
+             data.email is string &&
+             data.email == emailDocId &&
+             data.email.size() >= 3 &&
+             data.email.size() <= 120 &&
+             isValidEmail(data.email) &&
+             data.role is string &&
+             data.role in ['admin', 'staff'] &&
+             data.active is bool &&
+             data.displayName is string &&
+             data.displayName.size() <= 100 &&
+             data.addedBy is string &&
+             data.addedBy.size() <= 128 &&
+             data.createdAt is string &&
+             data.createdAt.size() >= 1 &&
+             data.createdAt.size() <= 40 &&
+             data.updatedAt is string &&
+             data.updatedAt.size() >= 1 &&
+             data.updatedAt.size() <= 40;
+    }
+
+    function isValidRatesMap(rates) {
+      let rateKeys = ['bcv', 'euro', 'binance', 'avg'];
+      return rates is map &&
+             rates.keys().hasOnly(rateKeys) &&
+             rates.keys().hasAll(rateKeys) &&
+             isValidPositiveRate(rates.bcv) &&
+             isValidPositiveRate(rates.euro) &&
+             isValidPositiveRate(rates.binance) &&
+             isValidPositiveRate(rates.avg);
+    }
+
+    function isValidStoreSettings(data) {
+      let allowedFields = [
+        'storeName',
+        'exchangeRate',
+        'activeRateKey',
+        'rates',
+        'updatedAt',
+        'updatedBy'
+      ];
+      return hasExactFields(data, allowedFields) &&
+             data.storeName is string &&
+             data.storeName.size() >= 1 &&
+             data.storeName.size() <= 80 &&
+             isValidPositiveRate(data.exchangeRate) &&
+             data.activeRateKey is string &&
+             data.activeRateKey in ['bcv', 'euro', 'binance', 'avg'] &&
+             isValidRatesMap(data.rates) &&
+             data.updatedAt is string &&
+             data.updatedAt.size() >= 1 &&
+             data.updatedAt.size() <= 40 &&
+             data.updatedBy is string &&
+             data.updatedBy == request.auth.uid;
+    }
+
+    function isValidInventoryItem(data, itemId) {
+      let allowedFields = [
+        'id',
+        'code',
+        'name',
+        'category',
+        'size',
+        'color',
+        'stock',
+        'dozenPrice',
+        'sellPrice',
+        'image',
+        'createdAt',
+        'updatedAt',
+        'updatedBy'
+      ];
+      return hasExactFields(data, allowedFields) &&
+             data.id is string &&
+             data.id == itemId &&
+             data.id.size() >= 1 &&
+             data.id.size() <= 64 &&
+             data.code is string &&
+             data.code.size() <= 40 &&
+             data.name is string &&
+             data.name.size() >= 1 &&
+             data.name.size() <= 120 &&
+             data.category is string &&
+             data.category in ['Franelas', 'Polos', 'Pantalones', 'Chaquetas', 'Otros'] &&
+             data.size is string &&
+             data.size.size() >= 1 &&
+             data.size.size() <= 40 &&
+             data.color is string &&
+             data.color.size() <= 60 &&
+             data.stock is int &&
+             data.stock >= 0 &&
+             data.stock <= 1000000 &&
+             isNumber(data.dozenPrice) &&
+             data.dozenPrice >= 0 &&
+             data.dozenPrice <= 1000000 &&
+             isNumber(data.sellPrice) &&
+             data.sellPrice >= 0 &&
+             data.sellPrice <= 1000000 &&
+             data.image is string &&
+             data.image.size() <= 450000 &&
+             data.createdAt is string &&
+             data.createdAt.size() >= 1 &&
+             data.createdAt.size() <= 40 &&
+             data.updatedAt is string &&
+             data.updatedAt.size() >= 1 &&
+             data.updatedAt.size() <= 40 &&
+             data.updatedBy is string &&
+             data.updatedBy == request.auth.uid;
+    }
+
+    function isValidSale(data, saleId) {
+      let allowedFields = [
+        'id',
+        'date',
+        'currency',
+        'rate',
+        'billedAmount',
+        'payment',
+        'total',
+        'profit',
+        'items',
+        'createdBy',
+        'createdByEmail'
+      ];
+      return hasExactFields(data, allowedFields) &&
+             data.id is string &&
+             data.id == saleId &&
+             data.id.size() >= 1 &&
+             data.id.size() <= 64 &&
+             data.date is string &&
+             data.date.size() >= 1 &&
+             data.date.size() <= 40 &&
+             data.currency is string &&
+             data.currency in ['USD', 'VES'] &&
+             isValidPositiveRate(data.rate) &&
+             isNumber(data.billedAmount) &&
+             data.billedAmount >= 0 &&
+             data.billedAmount <= 1000000000 &&
+             data.payment is string &&
+             data.payment in ['Efectivo', 'Pago Móvil', 'Zelle', 'Punto'] &&
+             isNumber(data.total) &&
+             data.total >= 0 &&
+             data.total <= 10000000 &&
+             isNumber(data.profit) &&
+             data.profit >= -10000000 &&
+             data.profit <= 10000000 &&
+             data.items is list &&
+             data.items.size() >= 1 &&
+             data.items.size() <= 100 &&
+             data.items[0] is map &&
+             data.createdBy is string &&
+             data.createdBy == request.auth.uid &&
+             data.createdByEmail is string &&
+             data.createdByEmail == userEmail();
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Staff allowlist: only admins manage staff; verified users may check own status
+    match /authorizedUsers/{email} {
+      allow get: if isAdmin() || (isSignedInVerified() && userEmail() == email);
+      allow list: if isAdmin();
+
+      allow create: if isAdmin() &&
+                    isValidAuthorizedUser(request.resource.data, email) &&
+                    (email != 'abel25.aaa@gmail.com' ||
+                     (isBootstrapAdmin() &&
+                      request.resource.data.role == 'admin' &&
+                      request.resource.data.active == true));
+
+      allow update: if isAdmin() &&
+                    isValidAuthorizedUser(request.resource.data, email) &&
+                    request.resource.data.email == resource.data.email &&
+                    request.resource.data.createdAt == resource.data.createdAt &&
+                    (email != 'abel25.aaa@gmail.com' ||
+                     (isBootstrapAdmin() &&
+                      request.resource.data.role == 'admin' &&
+                      request.resource.data.active == true));
+
+      allow delete: if isAdmin() &&
+                    email != 'abel25.aaa@gmail.com' &&
+                    email != userEmail();
+    }
+
+    // Singleton store settings document (all other settings docs denied by default)
+    match /settings/store {
+      allow get: if isAuthorizedStaff();
+      allow list: if false;
+      allow create, update: if isAuthorizedStaff() &&
+                            isValidStoreSettings(request.resource.data);
+      allow delete: if false;
+    }
+
+    // Store inventory items
+    match /inventory/{itemId} {
+      allow read: if isAuthorizedStaff();
+      allow create: if isAuthorizedStaff() &&
+                    isValidInventoryItem(request.resource.data, itemId);
+      allow update: if isAuthorizedStaff() &&
+                    isValidInventoryItem(request.resource.data, itemId) &&
+                    request.resource.data.createdAt == resource.data.createdAt &&
+                    request.resource.data.id == resource.data.id;
+      allow delete: if isAuthorizedStaff();
+    }
+
+    // Immutable POS sales records (voiding/returns allowed via delete by staff)
+    match /sales/{saleId} {
+      allow read: if isAuthorizedStaff();
+      allow create: if isAuthorizedStaff() &&
+                    isValidSale(request.resource.data, saleId);
+      allow update: if false;
+      allow delete: if isAuthorizedStaff();
+    }
+
+    // Default-deny catch-all for any unspecified collections or subcollections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

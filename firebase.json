@@ -1,0 +1,20 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Acuarios Shop",
+        "supportEmail": "abel25.aaa@gmail.com",
+        "authorizedRedirectUris": [
+          "https://acuariosshop-731c5.firebaseapp.com/__/auth/handler",
+          "https://abeldesigns.github.io/Acuarios-Shop-Inventario/",
+          "http://localhost:5000"
+        ]
+      }
+    }
+  }
+}
