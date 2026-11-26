@@ -31,7 +31,7 @@ rules_version = '2';
 //   - id: string (required, immutable, == itemId, 1..64 chars)
 //   - code: string (required, 0..40 chars)
 //   - name: string (required, 1..120 chars)
-//   - category: string (required, enum: 'Franelas' | 'Polos' | 'Pantalones' | 'Chaquetas' | 'Otros')
+//   - category: string (required, enum: 'Franelas' | 'Camisas' | 'Polos' | 'Suéteres' | 'Chaquetas' | 'Pantalones' | 'Pantalones Cargo' | 'Monos' | 'Gorras' | 'Correas' | 'Corbatas' | 'Zapatos' | 'Otros')
 //   - size: string (required, 1..40 chars)
 //   - color: string (required, 0..60 chars)
 //   - stock: int (required, 0..1000000)
@@ -225,7 +225,7 @@ service cloud.firestore {
              data.name.size() >= 1 &&
              data.name.size() <= 120 &&
              data.category is string &&
-             data.category in ['Franelas', 'Polos', 'Pantalones', 'Chaquetas', 'Otros'] &&
+             data.category in ['Franelas', 'Camisas', 'Polos', 'Suéteres', 'Chaquetas', 'Pantalones', 'Pantalones Cargo', 'Monos', 'Gorras', 'Correas', 'Corbatas', 'Zapatos', 'Otros'] &&
              data.size is string &&
              data.size.size() >= 1 &&
              data.size.size() <= 40 &&

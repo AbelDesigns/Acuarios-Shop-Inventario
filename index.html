@@ -239,9 +239,17 @@
             <label class="block text-sm font-semibold text-stone-700 mb-1">Categoría</label>
             <select id="edit-category" class="w-full rounded-xl border border-stone-300 px-3 py-3 text-base bg-white focus:border-[#0D253F] focus:outline-none">
               <option value="Franelas">Franelas</option>
+              <option value="Camisas">Camisas</option>
               <option value="Polos">Polos</option>
-              <option value="Pantalones">Pantalones</option>
+              <option value="Suéteres">Suéteres</option>
               <option value="Chaquetas">Chaquetas</option>
+              <option value="Pantalones">Pantalones</option>
+              <option value="Pantalones Cargo">Pantalones Cargo</option>
+              <option value="Monos">Monos</option>
+              <option value="Gorras">Gorras</option>
+              <option value="Correas">Correas</option>
+              <option value="Corbatas">Corbatas</option>
+              <option value="Zapatos">Zapatos</option>
               <option value="Otros">Otros</option>
             </select>
           </div>
@@ -553,9 +561,17 @@
               <label class="block text-sm font-bold text-stone-700 mb-1">Categoría</label>
               <select id="new-category" class="w-full rounded-2xl border border-stone-300 px-3 py-3 text-base bg-white focus:border-[#0D253F] focus:outline-none">
                 <option value="Franelas">Franelas</option>
+                <option value="Camisas">Camisas</option>
                 <option value="Polos">Polos</option>
-                <option value="Pantalones">Pantalones</option>
+                <option value="Suéteres">Suéteres</option>
                 <option value="Chaquetas">Chaquetas</option>
+                <option value="Pantalones">Pantalones</option>
+                <option value="Pantalones Cargo">Pantalones Cargo</option>
+                <option value="Monos">Monos</option>
+                <option value="Gorras">Gorras</option>
+                <option value="Correas">Correas</option>
+                <option value="Corbatas">Corbatas</option>
+                <option value="Zapatos">Zapatos</option>
                 <option value="Otros">Otros</option>
               </select>
             </div>
@@ -860,7 +876,21 @@
         measurementId: 'G-BDF3RMSD39'
       };
       const BOOTSTRAP_ADMIN_EMAIL = 'abel25.aaa@gmail.com';
-      const VALID_CATEGORIES = ['Franelas', 'Polos', 'Pantalones', 'Chaquetas', 'Otros'];
+      const VALID_CATEGORIES = [
+        'Franelas',
+        'Camisas',
+        'Polos',
+        'Suéteres',
+        'Chaquetas',
+        'Pantalones',
+        'Pantalones Cargo',
+        'Monos',
+        'Gorras',
+        'Correas',
+        'Corbatas',
+        'Zapatos',
+        'Otros'
+      ];
       const LEGACY_STORAGE_KEY = 'acuarios_shop_data_v1';
       const UI_PREFS_KEY = 'acuarios_shop_ui_prefs_v1';
 
@@ -961,9 +991,9 @@
       }
 
       function categorySampleKey(cat) {
-        if (cat === 'Polos') return 'sample:1';
-        if (cat === 'Pantalones') return 'sample:2';
-        if (cat === 'Chaquetas') return 'sample:3';
+        if (cat === 'Polos' || cat === 'Camisas') return 'sample:1';
+        if (cat === 'Pantalones' || cat === 'Pantalones Cargo' || cat === 'Monos') return 'sample:2';
+        if (cat === 'Chaquetas' || cat === 'Suéteres') return 'sample:3';
         if (cat === 'Franelas') return 'sample:0';
         return 'placeholder';
       }
