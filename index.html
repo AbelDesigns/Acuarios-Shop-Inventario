@@ -240,7 +240,7 @@
             <select id="edit-category" class="w-full rounded-xl border border-stone-300 px-3 py-3 text-base bg-white focus:border-[#0D253F] focus:outline-none">
               <option value="Franelas">Franelas</option>
               <option value="Camisas">Camisas</option>
-              <option value="Polos">Polos</option>
+              <option value="Chemise">Chemise</option>
               <option value="Suéteres">Suéteres</option>
               <option value="Chaquetas">Chaquetas</option>
               <option value="Pantalones">Pantalones</option>
@@ -562,7 +562,7 @@
               <select id="new-category" class="w-full rounded-2xl border border-stone-300 px-3 py-3 text-base bg-white focus:border-[#0D253F] focus:outline-none">
                 <option value="Franelas">Franelas</option>
                 <option value="Camisas">Camisas</option>
-                <option value="Polos">Polos</option>
+                <option value="Chemise">Chemise</option>
                 <option value="Suéteres">Suéteres</option>
                 <option value="Chaquetas">Chaquetas</option>
                 <option value="Pantalones">Pantalones</option>
@@ -879,7 +879,7 @@
       const VALID_CATEGORIES = [
         'Franelas',
         'Camisas',
-        'Polos',
+        'Chemise',
         'Suéteres',
         'Chaquetas',
         'Pantalones',
@@ -991,7 +991,7 @@
       }
 
       function categorySampleKey(cat) {
-        if (cat === 'Polos' || cat === 'Camisas') return 'sample:1';
+        if (cat === 'Chemise' || cat === 'Camisas') return 'sample:1';
         if (cat === 'Pantalones' || cat === 'Pantalones Cargo' || cat === 'Monos') return 'sample:2';
         if (cat === 'Chaquetas' || cat === 'Suéteres') return 'sample:3';
         if (cat === 'Franelas') return 'sample:0';
@@ -1110,8 +1110,8 @@
         {
           id: 'p3',
           code: 'PL-205',
-          name: 'Camisa Polo Clásica Azul',
-          category: 'Polos',
+          name: 'Chemise Clásica Azul',
+          category: 'Chemise',
           size: 'M',
           color: 'Azul Marino',
           stock: 9,
@@ -1177,7 +1177,8 @@
 
       function sanitizeItem(item, idx) {
         const now = new Date().toISOString();
-        const cat = item && VALID_CATEGORIES.includes(String(item.category)) ? String(item.category) : 'Otros';
+        const rawCat = item && String(item.category) === 'Polos' ? 'Chemise' : String(item && item.category || '');
+        const cat = VALID_CATEGORIES.includes(rawCat) ? rawCat : 'Otros';
         const id = item && item.id ? String(item.id).slice(0, 64) : ('p_' + Date.now() + '_' + idx);
         const img = compactImageForStorage(item && item.image ? String(item.image) : '');
         return {
